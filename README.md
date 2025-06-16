@@ -1,4 +1,5 @@
 🛍️ E-Commerce App
+
 This is a full-stack e-commerce application that I built from scratch. It includes a fully functional Admin Panel for product and user management. The entire architecture, design, and development were done by me.
 
 🚀 Tech Stack
