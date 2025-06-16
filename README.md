@@ -8,7 +8,7 @@ Backend: Node.js, Express.js
 
 Database: MongoDB
 
-State Management: React Context API (or useReducer)
+State Management: Redux Toolkit
 
 Authentication: JSON Web Tokens (JWT)
 
