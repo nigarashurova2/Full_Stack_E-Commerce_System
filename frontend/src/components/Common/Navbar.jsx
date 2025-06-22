@@ -31,13 +31,13 @@ const Navbar = () => {
         </div>
         <div className="hidden md:flex space-x-6">
           <Link
-            to="#"
+            to="/collections/all"
             className="text-gray-700 hover:text-black text-sm font-medium uppercase"
           >
             Men
           </Link>
           <Link
-            to="#"
+            to="/collections/all"
             className="text-gray-700 hover:text-black text-sm font-medium uppercase"
           >
             Women
@@ -57,6 +57,12 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center space-x-4">
+          <Link
+            to="/admin"
+            className="block bg-black px-2 py-1 rounded text-sm text-white"
+          >
+            Admin
+          </Link>
           <Link to="/profile" className="hover:text-black">
             <HiOutlineUser className="h-6 w-6 text-gray-700" />
           </Link>
@@ -74,7 +80,10 @@ const Navbar = () => {
             <SearchBar />
           </div>
 
-          <button className="md:hidden space-x-6 cursor-pointer" onClick={toggleNavDrawer}>
+          <button
+            className="md:hidden space-x-6 cursor-pointer"
+            onClick={toggleNavDrawer}
+          >
             <HiBars3BottomRight className="h-6 w-6 text-gray-700" />
           </button>
         </div>
@@ -105,7 +114,7 @@ const Navbar = () => {
               Men
             </Link>
             <Link
-              to="#"
+              to="collections/all"
               onClick={toggleNavDrawer}
               className="block text-gray-600 hover:text-black"
             >

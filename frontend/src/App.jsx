@@ -6,6 +6,12 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import CollectionPage from "./pages/CollectionPage";
+import ProductDetails from "./components/Products/ProductDetails";
+import Checkout from "./components/Cart/Checkout";
+import OrderConfirmationPage from "./pages/OrderConfirmationPage";
+import OrderDetailsPage from "./pages/OrderDetailsPage";
+import MyOrdersPage from "./pages/MyOrdersPage";
+import AdminLayout from "./components/Layout/AdminLayout";
 
 function App() {
   return (
@@ -19,9 +25,18 @@ function App() {
           <Route path="register" element={<Register />} />
           <Route path="profile" element={<Profile />} />
           <Route path="collections/:collection" element={<CollectionPage />} />
-          
+          <Route path="product/:id" element={<ProductDetails />} />
+          <Route path="checkout" element={<Checkout />} />
+          <Route
+            path="order-confirmation"
+            element={<OrderConfirmationPage />}
+          />
+          <Route path="order/:id" element={<OrderDetailsPage />} />
+          <Route path="my-orders" element={<MyOrdersPage />} />
         </Route>
-        <Route path="/admin">{/* Admin Layout */}</Route>
+        <Route path="/admin" element={<AdminLayout/>}>
+        {/* Admin Layout */}
+        </Route>
       </Routes>
     </BrowserRouter>
   );

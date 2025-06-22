@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const MyOrdersPage = () => {
   const [orders, setOrders] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // simulate fetching
@@ -49,7 +51,11 @@ const MyOrdersPage = () => {
       ];
       setOrders(mockOrders);
     }, 3000);
-  });
+  }, []);
+
+  const handleRowClick = (id) => {
+    navigate(`/product/${id}`);
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6">
@@ -60,7 +66,7 @@ const MyOrdersPage = () => {
             <tr>
               <th className="py-2 px-4 sm:py-3">Image</th>
               <th className="py-2 px-4 sm:py-3">Order ID</th>
-              <th className="py-2 px-4 sm:py-3">CreatedAt</th>
+              <th className="py-2 px-4 sm:py-3">Created At</th>
               <th className="py-2 px-4 sm:py-3">Shipping Address</th>
               <th className="py-2 px-4 sm:py-3">Items</th>
               <th className="py-2 px-4 sm:py-3">Price</th>
@@ -71,8 +77,9 @@ const MyOrdersPage = () => {
             {orders.length > 0 ? (
               orders.map((order) => (
                 <tr
+                  onClick={() => handleRowClick(order._id)}
                   key={order._id}
-                  className="border-b hover:border-gray-50 cursor-pointer"
+                  className="border-b border-b-gray-200 hover:border-gray-50 cursor-pointer"
                 >
                   <td className="py-2 px-2 sm:py-4 sm:px-4">
                     <img
