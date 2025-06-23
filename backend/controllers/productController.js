@@ -126,4 +126,77 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-module.exports = { createProduct, updateProduct, deleteProduct };
+const getProductsWithQuery = async (req, res) => {};
+
+const getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (product) {
+      res.json(product);
+    } else {
+      res.status(404).json({ message: "Product Not Found" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server Error");
+  }
+};
+
+const getSimilarProducts = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const product = await Product.findById(id);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    const similarProducts = await Product.find({
+      _id: { $ne: id },
+      gender: product.gender,
+      category: product.category,
+    }).limit(4);
+    res.json(similarProducts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server Error");
+  }
+};
+
+const getBestSellerProduct = async (req, res) => {
+  try {
+    const bestSeller = await Product.findOne().sort({ rating: -1 });
+    if (bestSeller) {
+      res.json(bestSeller);
+    } else {
+      res.status(404).json({ message: "No best seller found" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server Error");
+  }
+};
+
+
+const newArrivalsProducts = async (req, res)=> {
+  try {
+    const newArrivals = await Product.find().sort({ createdAt: -1 }).limit(8);
+    if (newArrivals) {
+      res.json(newArrivals);
+    } else {
+      res.status(404).json({ message: "No new arrivals found" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server Error");
+  }
+}
+
+module.exports = {
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  getProductsWithQuery,
+  getProductById,
+  getSimilarProducts,
+  getBestSellerProduct,
+  newArrivalsProducts
+};
