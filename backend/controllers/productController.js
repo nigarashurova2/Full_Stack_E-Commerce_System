@@ -126,7 +126,93 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-const getProductsWithQuery = async (req, res) => {};
+const getProductsWithQuery = async (req, res) => {
+  try {
+    const {
+      collection,
+      size,
+      color,
+      gender,
+      minPrice,
+      maxPrice,
+      sortBy,
+      search,
+      category,
+      material,
+      brand,
+      limit,
+    } = req.query;
+
+    let query = {};
+
+    // filter logic
+    if (collection && collection.toLocaleLowerCase() !== "all") {
+      query.collections = collection;
+    }
+
+    if (category && category.toLocaleLowerCase() !== "all") {
+      query.category = category;
+    }
+
+    if (material) {
+      query.material = { $in: material.split(",") };
+    }
+
+    if (brand) {
+      query.brand = { $in: brand.split(",") };
+    }
+
+    if (size) {
+      query.sizes = { $in: size.split(",") };
+    }
+
+    if (color) {
+      query.colors = { $in: [color] };
+    }
+    if (gender) {
+      query.gender = gender;
+    }
+
+    if (minPrice || maxPrice) {
+      query.price = {};
+
+      if (minPrice) query.$gte = Number(minPrice);
+      if (maxPrice) query.$lte = Number(maxPrice);
+    }
+
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // sort logic
+    let sort = {};
+    if (sortBy) {
+      switch (sortBy) {
+        case "priceAsc":
+          sort = { price: 1 };
+          break;
+        case "priceDesc":
+          sort = { price: -1 };
+          break;
+        case "popularity":
+          sort = { rating: -1 };
+          break;
+        default:
+          break;
+      }
+    }
+
+    // fetch products
+    let products = await Product.find(query).sort(sort).limit(Number(limit));
+    res.json(products);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server Error");
+  }
+};
 
 const getProductById = async (req, res) => {
   try {
@@ -175,8 +261,7 @@ const getBestSellerProduct = async (req, res) => {
   }
 };
 
-
-const newArrivalsProducts = async (req, res)=> {
+const newArrivalsProducts = async (req, res) => {
   try {
     const newArrivals = await Product.find().sort({ createdAt: -1 }).limit(8);
     if (newArrivals) {
@@ -188,7 +273,7 @@ const newArrivalsProducts = async (req, res)=> {
     console.log(error);
     res.status(500).send("Server Error");
   }
-}
+};
 
 module.exports = {
   createProduct,
@@ -198,5 +283,5 @@ module.exports = {
   getProductById,
   getSimilarProducts,
   getBestSellerProduct,
-  newArrivalsProducts
+  newArrivalsProducts,
 };
