@@ -45,4 +45,4 @@ app.use("/api/admin/orders", orderAdminRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on`);
-});s
+});
