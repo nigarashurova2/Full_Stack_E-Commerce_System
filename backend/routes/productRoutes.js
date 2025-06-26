@@ -9,7 +9,7 @@ const {
   getProductById,
   getSimilarProducts,
   getBestSellerProduct,
-  newArrivalsProducts
+  newArrivalsProducts,
 } = require("../controllers/productController");
 
 const router = express.Router();
@@ -34,29 +34,24 @@ router.delete("/:id", protect, isAdmin, deleteProduct);
 // @access Public
 router.get("/", getProductsWithQuery);
 
-
 // @route GET /api/products/:id
 // @desc Get a single product by ID
 // @access Public
 router.get("/:id", getProductById);
-
 
 // @route GET /api/products/similar/:id
 // @desc Retrieve similar products based on the current product's gender and category
 // @access Public
 router.get("/similar/:id", getSimilarProducts);
 
-
 // @route GET /api/products/best-seller
 // @desc Retrieve the product with highest rating
 // @access Public
-router.get("/best-seller", getBestSellerProduct)
+router.get("/best-seller", getBestSellerProduct);
 
 // @route GET /api/products/new-arrivals
 // @desc Retrieve latest 8 products - Creation date
 // @access Public
-router.get("/new-arrivals", newArrivalsProducts)
-
-
+router.get("/new-arrivals", newArrivalsProducts);
 
 module.exports = router;
