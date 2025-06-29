@@ -11,6 +11,8 @@ const createCheckout = async (req, res) => {
   }
 
   try {
+    console.log(req, "req");
+    
     const newCheckout = await Checkout.create({
       user: req.user._id,
       checkoutItems,
@@ -20,7 +22,7 @@ const createCheckout = async (req, res) => {
       paymentStatus: "Pending",
       isPaid: false,
     });
-    res.status(201).json(newCheckout);
+    return res.status(201).json(newCheckout);
   } catch (error) {
     console.log("Error Creating checkout session: ", error);
     return res.status(500).json({ message: "Server Error" });

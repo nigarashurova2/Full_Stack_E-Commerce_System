@@ -1,13 +1,30 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaFilter } from "react-icons/fa";
 import FilterSidebar from "../components/Products/FilterSidebar";
 import SortOptions from "../components/Products/SortOptions";
 import ProductGrid from "../components/Products/ProductGrid";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProductsByFilters } from "../redux/slices/productSlice";
+import { useParams, useSearchParams } from "react-router-dom";
 
 const CollectionPage = () => {
-  const [products, setProducts] = useState([]);
   const sidebarRef = useRef(null);
+  const [searchParams] = useSearchParams();
+  const { collection } = useParams();
+  const dispatch = useDispatch();
+  const queryParams = Object.fromEntries([...searchParams]);
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { products, loading, error } = useSelector((state) => state.products);
+
+  useEffect(() => {
+    dispatch(
+      fetchProductsByFilters({
+        collection,
+        ...queryParams,
+      })
+    );
+  }, [searchParams, collection]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -22,108 +39,11 @@ const CollectionPage = () => {
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
-    
-    return ()=> {
-    document.removeEventListener("mousedown", handleClickOutside);
-    }
-  }, []);
 
-  useEffect(() => {
-    // simulate fetching
-    setTimeout(() => {
-      const fetchingProducts = [
-        {
-          _id: "1",
-          name: "Stylish Jacket",
-          price: 120,
-          images: [
-            {
-              url: "https://picsum.photos/500/500?random=1",
-              altText: "Stylish Jacket",
-            },
-          ],
-        },
-        {
-          _id: "2",
-          name: "Stylish Jacket",
-          price: 120,
-          images: [
-            {
-              url: "https://picsum.photos/500/500?random=2",
-              altText: "Stylish Jacket",
-            },
-          ],
-        },
-        {
-          _id: "3",
-          name: "Stylish Jacket",
-          price: 120,
-          images: [
-            {
-              url: "https://picsum.photos/500/500?random=3",
-              altText: "Stylish Jacket",
-            },
-          ],
-        },
-        {
-          _id: "4",
-          name: "Stylish Jacket",
-          price: 120,
-          images: [
-            {
-              url: "https://picsum.photos/500/500?random=4",
-              altText: "Stylish Jacket",
-            },
-          ],
-        },
-        {
-          _id: "5",
-          name: "Stylish Jacket",
-          price: 120,
-          images: [
-            {
-              url: "https://picsum.photos/500/500?random=5",
-              altText: "Stylish Jacket",
-            },
-          ],
-        },
-        {
-          _id: "6",
-          name: "Stylish Jacket",
-          price: 120,
-          images: [
-            {
-              url: "https://picsum.photos/500/500?random=6",
-              altText: "Stylish Jacket",
-            },
-          ],
-        },
-        {
-          _id: "7",
-          name: "Stylish Jacket",
-          price: 120,
-          images: [
-            {
-              url: "https://picsum.photos/500/500?random=7",
-              altText: "Stylish Jacket",
-            },
-          ],
-        },
-        {
-          _id: "8",
-          name: "Stylish Jacket",
-          price: 120,
-          images: [
-            {
-              url: "https://picsum.photos/500/500?random=7",
-              altText: "Stylish Jacket",
-            },
-          ],
-        },
-      ];
-      setProducts(fetchingProducts);
-    }, 3000);
-  });
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col lg:flex-row">
@@ -144,13 +64,13 @@ const CollectionPage = () => {
         <FilterSidebar />
       </div>
 
-      <div className="p-4">
-        <h2 className="text-2xl uppercase mb-4">All Collection</h2>
+      <div className="p-4 w-full">
+        <h2 className="text-2xl uppercase mb-4 w-full">All Collection</h2>
         {/* sort options */}
         <SortOptions />
 
         {/* product grid  */}
-        <ProductGrid products={products} />
+        <ProductGrid products={products} error={error} loading={loading} />
       </div>
     </div>
   );

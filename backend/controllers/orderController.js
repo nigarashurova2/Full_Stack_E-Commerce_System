@@ -55,7 +55,7 @@ const updateOrderForAdmin = async (req, res) => {
         status === "Delivered" ? Date.now() : order.deliveredAt;
 
       const updateOrder = await order.save();
-      res.json(updateOrder);
+      return res.json(updateOrder);
     } else {
       if (!order) return res.status(404).json({ message: "Order not found" });
     }

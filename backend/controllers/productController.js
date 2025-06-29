@@ -146,7 +146,7 @@ const getProductsWithQuery = async (req, res) => {
     let query = {};
 
     // filter logic
-    if (collection && collection.toLocaleLowerCase() !== "all") {
+    if (collection && collection.toLocaleLowerCase().trim() !== "all") {
       query.collections = collection;
     }
 
@@ -176,8 +176,8 @@ const getProductsWithQuery = async (req, res) => {
     if (minPrice || maxPrice) {
       query.price = {};
 
-      if (minPrice) query.$gte = Number(minPrice);
-      if (maxPrice) query.$lte = Number(maxPrice);
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
     }
 
     if (search) {
@@ -206,6 +206,12 @@ const getProductsWithQuery = async (req, res) => {
     }
 
     // fetch products
+
+    
+    console.log(query, "qu");
+    console.log(sort, "sort");
+    
+    
     let products = await Product.find(query).sort(sort).limit(Number(limit));
     res.json(products);
   } catch (error) {
@@ -217,21 +223,22 @@ const getProductsWithQuery = async (req, res) => {
 const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
+    console.log(product, "product");
+
     if (product) {
-      res.json(product);
+      return res.json(product);
     } else {
-      res.status(404).json({ message: "Product Not Found" });
+      return res.status(404).json({ message: "Product Not Found" });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).send("Server Error");
+    return res.status(500).json({message: "Server Error"});
   }
 };
 
 const getSimilarProducts = async (req, res) => {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
     const product = await Product.findById(id);
     if (!product) return res.status(404).json({ message: "Product not found" });
 
@@ -240,10 +247,10 @@ const getSimilarProducts = async (req, res) => {
       gender: product.gender,
       category: product.category,
     }).limit(4);
-    res.json(similarProducts);
+    return res.json(similarProducts);
   } catch (error) {
     console.log(error);
-    res.status(500).send("Server Error");
+    return res.status(500).json({message: "Server Error"});
   }
 };
 
@@ -263,7 +270,7 @@ const getBestSellerProduct = async (req, res) => {
 
 const newArrivalsProducts = async (req, res) => {
   try {
-    const newArrivals = await Product.find().sort({ createdAt: -1 }).limit(8);
+    const newArrivals = await Product.find({}).sort({ createdAt: -1 }).limit(8);
     if (newArrivals) {
       res.json(newArrivals);
     } else {
@@ -294,5 +301,5 @@ module.exports = {
   getSimilarProducts,
   getBestSellerProduct,
   newArrivalsProducts,
-  getAllProducts
+  getAllProducts,
 };

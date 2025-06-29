@@ -19,6 +19,9 @@ import EditProductPage from "./components/Admin/EditProductPage";
 import OrderManagement from "./components/Admin/OrderManagement";
 import { Provider } from "react-redux";
 import store from "./redux/store";
+import GuestOnly from "./components/Routes/GuestOnly";
+import RequireAdmin from "./components/Routes/RequireAdmin";
+import RequireAuth from "./components/Routes/RequireAuth";
 
 function App() {
   return (
@@ -27,32 +30,43 @@ function App() {
         <Toaster position="top-right" />
         <Routes>
           <Route path="/" element={<UserLayout />}>
-            {/* User layout */}
+            {/* Açıq səhifələr */}
             <Route index element={<Home />} />
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
-            <Route path="profile" element={<Profile />} />
+            <Route path="product/:id" element={<ProductDetails />} />
             <Route
               path="collections/:collection"
               element={<CollectionPage />}
             />
-            <Route path="product/:id" element={<ProductDetails />} />
-            <Route path="checkout" element={<Checkout />} />
-            <Route
-              path="order-confirmation"
-              element={<OrderConfirmationPage />}
-            />
-            <Route path="order/:id" element={<OrderDetailsPage />} />
-            <Route path="my-orders" element={<MyOrdersPage />} />
+
+            {/* Yalnız login olmayanlara */}
+            <Route element={<GuestOnly />}>
+              <Route path="login" element={<Login />} />
+              <Route path="register" element={<Register />} />
+            </Route>
+
+            {/* Login tələb edən səhifələr */}
+            <Route element={<RequireAuth />}>
+              <Route path="profile" element={<Profile />} />
+              <Route path="checkout" element={<Checkout />} />
+              <Route
+                path="order-confirmation"
+                element={<OrderConfirmationPage />}
+              />
+              <Route path="order/:id" element={<OrderDetailsPage />} />
+              <Route path="my-orders" element={<MyOrdersPage />} />
+            </Route>
           </Route>
 
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminHomePage />} />
-            <Route path="dashboard" element={<AdminHomePage />} />
-            <Route path="users" element={<UserManagement />} />
-            <Route path="products" element={<ProductManagement />} />
-            <Route path="products/:id/edit" element={<EditProductPage />} />
-            <Route path="orders" element={<OrderManagement />} />
+          {/*  Admin route – yalnız admin user gire bilər */}
+          <Route element={<RequireAdmin />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminHomePage />} />
+              <Route path="dashboard" element={<AdminHomePage />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="products" element={<ProductManagement />} />
+              <Route path="products/:id/edit" element={<EditProductPage />} />
+              <Route path="orders" element={<OrderManagement />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>

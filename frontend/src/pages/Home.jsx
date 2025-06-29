@@ -6,16 +6,18 @@ import GenderCollectionSection from "../components/Products/GenderCollectionSect
 import NewArrivals from "../components/Products/NewArrivals";
 import TopWearsWomenProducts from "../components/Products/TopWearsWomenProducts";
 
+
 const Home = () => {
+
   return (
     <>
       <Hero />
       <GenderCollectionSection />
-      <NewArrivals/>
-      <BestSeller/>
-      <TopWearsWomenProducts/>
-      <FeaturedCollection/>
-      <FeaturesSection/>
+      <NewArrivals />
+      <BestSeller />
+      <TopWearsWomenProducts />
+      <FeaturedCollection />
+      <FeaturesSection />
     </>
   );
 };

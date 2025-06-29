@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   HiOutlineUser,
   HiOutlineShoppingBag,
@@ -8,11 +8,23 @@ import SearchBar from "./SearchBar";
 import CartDrawer from "../Layout/CartDrawer";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [navDrawerOpen, setNavDrawerOpen] = useState(false);
+  const { cart } = useSelector((state) => state.cart);
+  const { user } = useSelector((state) => state.auth);
 
+  const cartItemCount = cart?.products?.reduce(
+    (total, product) => total + product.quantity,
+    0
+  );
+
+  const location = useLocation();
+  const isActive = (query) => {
+    return location.search === query;
+  };
   const toggleCartDrawer = () => {
     setDrawerOpen(!drawerOpen);
   };
@@ -31,49 +43,71 @@ const Navbar = () => {
         </div>
         <div className="hidden md:flex space-x-6">
           <Link
-            to="/collections/all"
-            className="text-gray-700 hover:text-black text-sm font-medium uppercase"
+            to="/collections/all?gender=Men"
+            className={`text-sm font-medium uppercase ${
+              isActive("?gender=Men")
+                ? "font-700 shadow-2xl text-[#ea2e0e]"
+                : "text-gray-700 hover:text-black"
+            }`}
           >
             Men
           </Link>
           <Link
-            to="/collections/all"
-            className="text-gray-700 hover:text-black text-sm font-medium uppercase"
+            to="/collections/all?gender=Women"
+            className={`text-sm font-medium uppercase ${
+              isActive("?gender=Women")
+                ? "font-700 shadow-2xl text-[#ea2e0e]"
+                : "text-gray-700 hover:text-black"
+            }`}
           >
             Women
           </Link>
           <Link
-            to="#"
-            className="text-gray-700 hover:text-black text-sm font-medium uppercase"
+            to="/collections/all?category=Top Wear"
+            className={`text-sm font-medium uppercase ${
+              isActive("?category=Top%20Wear")
+                ? "font-700 shadow-2xl text-[#ea2e0e]"
+                : "text-gray-700 hover:text-black"
+            }`}
           >
             Top Wear
           </Link>
           <Link
-            to="#"
-            className="text-gray-700 hover:text-black text-sm font-medium uppercase"
+            to="/collections/all?category=Bottom Wear"
+            className={`text-sm font-medium uppercase ${
+              isActive("?category=Bottom%20Wear")
+                ? "font-700 shadow-2xl text-[#ea2e0e]"
+                : "text-gray-700 hover:text-black"
+            }`}
           >
             Bottom Wear
           </Link>
         </div>
 
         <div className="flex items-center space-x-4">
-          <Link
-            to="/admin"
-            className="block bg-black px-2 py-1 rounded text-sm text-white"
-          >
-            Admin
-          </Link>
-          <Link to="/profile" className="hover:text-black">
-            <HiOutlineUser className="h-6 w-6 text-gray-700" />
-          </Link>
+          {user && user.role === "admin" && (
+            <Link
+              to="/admin"
+              className="block bg-black px-2 py-1 rounded text-sm text-white"
+            >
+              Admin
+            </Link>
+          )}
+          {user && (
+            <Link to="/profile" className="hover:text-black">
+              <HiOutlineUser className="h-6 w-6 text-gray-700" />
+            </Link>
+          )}
           <button
             className="relative hover:text-black cursor-pointer"
             onClick={toggleCartDrawer}
           >
             <HiOutlineShoppingBag className="h-6 w-6 text-gray-700" />
-            <span className="absolute -top-1  bg-[#ea2e0e] text-white text-xs rounded-full px-2 py-0.5">
-              4
-            </span>
+            {cartItemCount > 0 && (
+              <span className="absolute -top-1  bg-[#ea2e0e] text-white text-xs rounded-full px-2 py-0.5">
+                {cartItemCount}
+              </span>
+            )}
           </button>
 
           <div className="overflow-hidden">
@@ -107,30 +141,46 @@ const Navbar = () => {
           <h2 className="text-2xl font-semibold mb-4">Menu</h2>
           <nav className="space-y-4">
             <Link
-              to="collections/all"
+              to="/collections/all?gender=Men"
               onClick={toggleNavDrawer}
-              className="block text-gray-600 hover:text-black"
+              className={`block text-sm font-medium uppercase ${
+                isActive("?gender=Men")
+                  ? "font-700 shadow-2xl text-[#ea2e0e]"
+                  : "text-gray-700 hover:text-black"
+              }`}
             >
               Men
             </Link>
             <Link
-              to="collections/all"
+              to="/collections/all?gender=Women"
               onClick={toggleNavDrawer}
-              className="block text-gray-600 hover:text-black"
+              className={`block text-sm font-medium uppercase ${
+                isActive("?gender=Women")
+                  ? "font-700 shadow-2xl text-[#ea2e0e]"
+                  : "text-gray-700 hover:text-black"
+              }`}
             >
               Women
             </Link>
             <Link
-              to="#"
+              to="/collections/all?category=Top Wear"
               onClick={toggleNavDrawer}
-              className="block text-gray-600 hover:text-black"
+              className={`block text-sm font-medium uppercase ${
+                isActive("?category=Top Wear")
+                  ? "font-700 shadow-2xl text-[#ea2e0e]"
+                  : "text-gray-700 hover:text-black"
+              }`}
             >
               Top Wear
             </Link>
             <Link
-              to="#"
+              to="/collections/all?category=Bottom Wear"
               onClick={toggleNavDrawer}
-              className="block text-gray-600 hover:text-black"
+              className={`block text-sm font-medium uppercase ${
+                isActive("?category=Bottom Wear")
+                  ? "font-700 shadow-2xl text-[#ea2e0e]"
+                  : "text-gray-700 hover:text-black"
+              }`}
             >
               Bottom Wear
             </Link>

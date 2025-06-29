@@ -1,92 +1,45 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import SimilarProducts from "./SimilarProducts";
+import { useParams } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchProductDetails,
+  fetchSimilarProducts,
+} from "../../redux/slices/productSlice";
+import { addToCart } from "../../redux/slices/cartSlice";
 
-const selectedProduct = {
-  name: "Stylish Jacket",
-  price: 120,
-  originalPrice: 150,
-  description: "This is a stylish ",
-  brand: "Fashion Brand",
-  material: "Leather",
-  sizes: ["S", "M", "L", "XL"],
-  colors: ["Red", "Black"],
-  images: [
-    {
-      url: "https://picsum.photos/500/500?random=1",
-      altText: "Stylish Jacket 1",
-    },
-    {
-      url: "https://picsum.photos/500/500?random=2",
-      altText: "Stylish Jacket 2",
-    },
-    {
-      url: "https://picsum.photos/500/500?random=3",
-      altText: "Stylish Jacket 3",
-    },
-  ],
-};
-
-const similarProduct = [
-  {
-    _id: 1,
-    name: "Product 1",
-    price: 100,
-    images: [
-      {
-        url: "https://picsum.photos/500/500?random=1",
-        altText: "Stylish Jacket 1",
-      },
-    ],
-  },
-  {
-    _id: 2,
-    name: "Product 2",
-    price: 100,
-    images: [
-      {
-        url: "https://picsum.photos/500/500?random=2",
-        altText: "Stylish Jacket 2",
-      },
-    ],
-  },
-  {
-    _id: 3,
-    name: "Product 3",
-    price: 100,
-    images: [
-      {
-        url: "https://picsum.photos/500/500?random=2",
-        altText: "Stylish Jacket 2",
-      },
-    ],
-  },
-  {
-    _id: 4,
-    name: "Product 4",
-    price: 100,
-    images: [
-      {
-        url: "https://picsum.photos/500/500?random=2",
-        altText: "Stylish Jacket 2",
-      },
-    ],
-  },
-];
-
-const ProductDetails = () => {
+const ProductDetails = ({ productId }) => {
+  const { id } = useParams();
   const [mainImage, setMainImage] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const { selectedProduct, similarProducts, loading, error } = useSelector(
+    (state) => state.products
+  );
+  const { user, guestId } = useSelector((state) => state.auth);
+   const userId = user ? user._id : null;
+
+  const dispatch = useDispatch();
+  const productFetchId = productId || id;
 
   useEffect(() => {
-    if (selectedProduct.images.length > 0) {
+    dispatch(fetchProductDetails(productFetchId));
+    dispatch(fetchSimilarProducts(productFetchId));
+  }, [productFetchId, dispatch]);
+
+  useEffect(() => {
+    if (selectedProduct?.images?.length > 0) {
       setMainImage(selectedProduct.images[0]);
     }
   }, [selectedProduct]);
+
+  const images = selectedProduct?.images ?? [];
+  const colors = selectedProduct?.colors ?? [];
+  const sizes = selectedProduct?.sizes ?? [];
 
   const handleQuantityChange = (action) => {
     if (action === "plus") setQuantity((prev) => prev + 1);
@@ -101,20 +54,50 @@ const ProductDetails = () => {
       return;
     }
     setIsButtonDisabled(true);
-    setTimeout(() => {
-      toast.success("Product added to cart!", {
-        duration: 1000,
+    console.log(user, "user");
+    
+    dispatch(
+      addToCart({
+        productId: productFetchId,
+        quantity,
+        size: selectedSize,
+        color: selectedColor,
+        guestId,
+        userId,
+      })
+    )
+      .then(() => {
+        toast.success("Product added to cart!", {
+          duration: 2000,
+        });
+      })
+      .finally(() => {
+        setIsButtonDisabled(false);
       });
-      setIsButtonDisabled(false);
-    }, 500);
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[300px]">
+        <p className="text-gray-500">Loading product details...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-[300px]">
+        <p className="text-red-500">Failed to load product details.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
       <div className="max-w-6xl mx-auto bg-white p-8 rounded-lg">
         <div className="flex flex-col md:flex-row">
           <div className="hidden md:flex flex-col space-y-4 mr-6">
-            {selectedProduct.images.map((image, index) => (
+            {images.map((image, index) => (
               <img
                 onClick={() => setMainImage(image)}
                 key={index}
@@ -141,7 +124,7 @@ const ProductDetails = () => {
 
           {/* Mobile Version */}
           <div className="md:hidden flex overscroll-x-contain space-x-4 mb-4">
-            {selectedProduct.images.map((image, index) => (
+            {images.map((image, index) => (
               <img
                 onClick={() => setMainImage(image)}
                 key={index}
@@ -159,20 +142,20 @@ const ProductDetails = () => {
           {/* right side */}
           <div className="md:w-1/2 md:ml-10">
             <h1 className="text-2xl md:text-3xl font-semibold mb-2">
-              {selectedProduct.name}
+              {selectedProduct?.name}
             </h1>
             <p className="text-lg text-gray-600 mb-1 line-through">
-              {selectedProduct.originalPrice &&
-                `${selectedProduct.originalPrice}`}
+              {selectedProduct?.originalPrice}
             </p>
             <p className="text-lg text-gray-500 mb-2">
-              ${selectedProduct.price}
+              ${selectedProduct?.price}
             </p>
-            <p className="text-gray-600 mb-4">{selectedProduct.description}</p>
+            <p className="text-gray-600 mb-4">{selectedProduct?.description}</p>
+
             <div className="mb-4">
               <p className="text-gray-700">Color:</p>
               <div className="flex gap-2 m-2">
-                {selectedProduct.colors.map((color) => (
+                {colors.map((color) => (
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
@@ -193,7 +176,7 @@ const ProductDetails = () => {
             <div className="mb-4">
               <p className="text-gray-700">Size:</p>
               <div className="flex gap-2 mt-2">
-                {selectedProduct.sizes.map((size) => (
+                {sizes.map((size) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
@@ -231,7 +214,7 @@ const ProductDetails = () => {
             <button
               disabled={isButtonDisabled}
               onClick={handleAddToCart}
-              className={`bg-black text-white py-2 px-6 rounded w-full mb-4 hover:bg-gray-800 ${
+              className={`bg-black text-white py-2 px-6 rounded w-full mb-4 ${
                 isButtonDisabled
                   ? "cursor-not-allowed opacity-50"
                   : "hover:bg-gray-900"
@@ -246,11 +229,11 @@ const ProductDetails = () => {
                 <tbody>
                   <tr>
                     <td className="py-1">Brand:</td>
-                    <td className="py-1">{selectedProduct.brand}</td>
+                    <td className="py-1">{selectedProduct?.brand}</td>
                   </tr>
                   <tr>
                     <td className="py-1">Material:</td>
-                    <td className="py-1">{selectedProduct.material}</td>
+                    <td className="py-1">{selectedProduct?.material}</td>
                   </tr>
                 </tbody>
               </table>
@@ -258,7 +241,11 @@ const ProductDetails = () => {
           </div>
         </div>
         {/* similarProducts */}
-        <SimilarProducts similarProduct={similarProduct} />
+        <SimilarProducts
+          similarProduct={similarProducts}
+          error={error}
+          loading={loading}
+        />
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ const SortOptions = () => {
     setSearchParams(searchParams)
   }
   return (
-    <div className="mb-4 flex items-center justify-end mr-5">
+    <div className="w-full mb-4 flex items-center justify-end mr-5">
       <select
         name="sort"
         id="sort"

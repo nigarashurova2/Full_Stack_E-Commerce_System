@@ -1,9 +1,9 @@
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
 
-const getCart = async (userId, guestId) => {
+const getCart = async (userId, guestId) => {  
   if (userId) {
-    return await Cart.findOne({ user: userId });
+    return await Cart.findOne({ userId: userId });
   } else if (guestId) {
     return await Cart.findOne({ guestId });
   }
@@ -20,6 +20,8 @@ const addToCart = async (req, res) => {
 
     // determine if the user is logged in or guest
     let cart = await getCart(userId, guestId);
+    console.log(cart, "cart");
+    
 
     if (cart) {
       const productIndex = cart.products.findIndex(
@@ -35,7 +37,7 @@ const addToCart = async (req, res) => {
         cart.products.push({
           productId,
           name: product.name,
-          image: product.image,
+          image: product.images[0].url,
           price: product.price,
           size,
           color,
@@ -78,9 +80,17 @@ const updateProductQuantity = async (req, res) => {
   const { productId, quantity, size, color, guestId, userId } = req.body;
 
   try {
+    
     const cart = await getCart(userId, guestId);
+    console.log(userId, guestId, "user guest");
+    console.log(cart, "cart");
+    
+
+    
     if (!cart) return res.status(404).json({ message: "Cart not found" });
     const product = await Product.findById(productId);
+    console.log(product, "product");
+    
 
     if (!product) return res.status(404).json({ message: "Product not found" });
 
@@ -91,9 +101,13 @@ const updateProductQuantity = async (req, res) => {
         p.color === color
     );
 
+    console.log(productIndex, "prod");
+    
     if (productIndex > -1) {
       // update quantity
       if (quantity > 0) {
+        console.log(quantity, "qauantity");
+        
         cart.products[productIndex].quantity = quantity;
       } else {
         cart.products.splice(productIndex, 1); // remove product if quantity is 0
@@ -160,7 +174,7 @@ const mergeCartInLogin = async (req, res) => {
   const { guestId } = req.body;
   try {
     const guestCart = await Cart.findOne({ guestId });
-    const userCart = await Cart.findOne({ user: req.user._id });
+    const userCart = await Cart.findOne({ userId: req.user._id });
 
     if (guestCart) {
       if (guestCart.products.length === 0) {
@@ -198,7 +212,7 @@ const mergeCartInLogin = async (req, res) => {
         res.status(200).json(userCart);
       } else {
         // if the user has no existing cart, assign the guest cart to the user
-        guestCart.user = req.user._id;
+        guestCart.userId = req.user._id;
         guestCart.guestId = undefined;
 
         await guestCart.save();
