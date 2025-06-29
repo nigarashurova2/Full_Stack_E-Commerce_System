@@ -8,7 +8,7 @@ export const fetchAdminProducts = createAsyncThunk(
   async () => {
     const response = await axios.get(`${API_URL}/api/admin/products`, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        Authorization: `Bearer ${localStorage.getItem("userToken").replace(/"/g, "")}`,
       },
     });
     return response.data;
@@ -23,7 +23,7 @@ export const createProduct = createAsyncThunk(
       productData,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          Authorization: `Bearer ${localStorage.getItem("userToken").replace(/"/g, "")}`,
         },
       }
     );
@@ -39,7 +39,7 @@ export const updateProduct = createAsyncThunk(
       productData,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          Authorization: `Bearer ${localStorage.getItem("userToken").replace(/"/g, "")}`,
         },
       }
     );
@@ -52,7 +52,7 @@ export const deleteProduct = createAsyncThunk(
   async ({ id }) => {
     await axios.delete(`${API_URL}/api/admin/products/${id}`, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        Authorization: `Bearer ${localStorage.getItem("userToken").replace(/"/g, "")}`,
       },
     });
     return id;
@@ -113,6 +113,7 @@ const adminProductSlice = createSlice({
       })
       .addCase(deleteProduct.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(deleteProduct.fulfilled, (state, action) => {
         state.loading = false;

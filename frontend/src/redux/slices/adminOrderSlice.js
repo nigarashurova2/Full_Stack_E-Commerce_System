@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { toast } from "sonner";
 
 const API_URL = `${import.meta.env.VITE_BACKEND_URL}`;
 
@@ -9,7 +10,9 @@ export const fetchAllOrders = createAsyncThunk(
     try {
       const response = await axios.get(`${API_URL}/api/admin/orders`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          Authorization: `Bearer ${localStorage
+            .getItem("userToken")
+            .replace(/"/g, "")}`,
         },
       });
       return response.data;
@@ -28,12 +31,20 @@ export const updateOrderStatus = createAsyncThunk(
         status,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+            Authorization: `Bearer ${localStorage
+              .getItem("userToken")
+              .replace(/"/g, "")}`,
           },
         }
       );
+      toast.success("Updated Order", {
+        duration: 3000,
+      });
       return response.data;
     } catch (error) {
+      toast.error("Failed update order", {
+        duration: 3000,
+      });
       return rejectWithValue(error.response.data);
     }
   }
@@ -45,11 +56,19 @@ export const deleteOrder = createAsyncThunk(
     try {
       await axios.delete(`${API_URL}/api/admin/orders/${id}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          Authorization: `Bearer ${localStorage
+            .getItem("userToken")
+            .replace(/"/g, "")}`,
         },
+      });
+      toast.success("Deleted Order", {
+        duration: 3000,
       });
       return id;
     } catch (error) {
+      toast.error("Failed delete order", {
+        duration: 3000,
+      });
       return rejectWithValue(error.response.data);
     }
   }

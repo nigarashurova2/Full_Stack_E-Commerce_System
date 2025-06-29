@@ -1,24 +1,33 @@
 import { FaRegEdit, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import {
+  deleteProduct,
+  fetchAdminProducts,
+} from "../../redux/slices/adminProductSlice";
 
-const products = [
-  {
-    _id: "1233",
-    name: "Product 1",
-    price: 120,
-    sku: 123,
-  },
-  {
-    _id: "535",
-    name: "Product 2",
-    price: 120,
-    sku: 123,
-  },
-];
 const ProductManagement = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+  const { products, loading, error } = useSelector(
+    (state) => state.adminProducts
+  );
+
+  useEffect(() => {
+    dispatch(fetchAdminProducts());
+  }, [dispatch]);
+
   const handleDeleteProduct = (productId) => {
-    console.log(productId);
+    if (window.confirm("Are you sure want to delete the Product?")) {
+      dispatch(deleteProduct({id:productId}));
+    }
   };
+
+  if(loading) return <p>Loading...</p>
+  if(error) return <p>Error: {error}</p>
 
   return (
     <div className="max-w-7xl p-6 mx-auto">
@@ -53,7 +62,7 @@ const ProductManagement = () => {
                       <FaRegEdit />
                     </Link>
                     <button
-                      onClick={handleDeleteProduct(product._id)}
+                      onClick={() => handleDeleteProduct(product._id)}
                       className="bg-red-500 hover:bg-red-700 cursor-pointer text-md text-white px-2 py-2 rounded"
                     >
                       <FaTrash />
@@ -63,7 +72,9 @@ const ProductManagement = () => {
               ))
             ) : (
               <tr>
-                <td className="p-4 text-center text-gray-500" colSpan={4}>No Product Data found!</td>
+                <td className="p-4 text-center text-gray-500" colSpan={4}>
+                  No Product Data found!
+                </td>
               </tr>
             )}
           </tbody>

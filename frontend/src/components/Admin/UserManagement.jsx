@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addUser,
+  deleteUser,
+  fetchUsers,
+  updateUser,
+} from "../../redux/slices/adminSlice";
+import { useNavigate } from "react-router-dom";
 
 const UserManagement = () => {
-  const users = [
-    {
-      _id: 1221,
-      name: "John Doe",
-      email: "john@example.com",
-      role: "admin",
-    },
-  ];
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user: curUser } = useSelector((state) => state.auth);
+  const { users, loading, error } = useSelector((state) => state.admin);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -18,14 +22,24 @@ const UserManagement = () => {
     role: "customer", //Default role
   });
 
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (curUser && curUser.role !== "admin") {
+      navigate("/");
+    }
+  }, [curUser, navigate]);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
 
+    dispatch(addUser(formData));
     setFormData({
       name: "",
       email: "",
@@ -34,17 +48,20 @@ const UserManagement = () => {
     });
   };
 
-  const handleRoleChange = (userId, role) => {
-    console.log(userId, role);
+  const handleRoleChange = (userId, newRole) => {
+    console.log(userId, newRole, "userId, newRole");
+    
+    dispatch(updateUser({ id: userId, role: newRole }));
   };
   const handleDeleteUser = (userId) => {
-    console.log(userId);
-    
+    dispatch(deleteUser(userId));
   };
 
   return (
     <div className="max-w-7xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-4">User Management</h2>
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error}</p>}
       {/* Add New User Form */}
       <div className="p-6 rounded-lg mb-6">
         <h3 className="text-lg font-bold mb-4">Add New User</h3>
@@ -102,7 +119,6 @@ const UserManagement = () => {
               name="role"
               id="role"
               className="w-full border p-2 border-gray-400 rounded"
-              value={formData.role}
               onChange={handleChange}
             >
               <option value="admin">Admin</option>
@@ -145,6 +161,8 @@ const UserManagement = () => {
                     id="role"
                     className="w-full border p-2 border-gray-400 rounded"
                     onChange={(e) => handleRoleChange(user._id, e.target.value)}
+                    value={user.role}
+                    disabled={user._id === curUser._id}
                   >
                     <option value="admin">Admin</option>
                     <option value="customer">Customer</option>
@@ -152,8 +170,9 @@ const UserManagement = () => {
                 </td>
                 <td className="py-3 px-4">
                   <button
-                    onClick={handleDeleteUser(user._id)}
-                    className="bg-red-500 hover:bg-red-700 cursor-pointer text-md text-white px-2 py-2 rounded"
+                    disabled={user._id === curUser._id}
+                    onClick={() => handleDeleteUser(user._id)}
+                    className={`bg-red-500 hover:bg-red-700 cursor-pointer text-md text-white px-2 py-2 rounded ${user._id === curUser._id && "disabled:cursor-not-allowed disabled:opacity-50"} `}
                   >
                     <FaTrash />
                   </button>

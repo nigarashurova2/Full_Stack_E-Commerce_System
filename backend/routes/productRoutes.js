@@ -4,7 +4,6 @@ const { protect, isAdmin } = require("../middleware/authMiddleware");
 const {
   createProduct,
   updateProduct,
-  deleteProduct,
   getProductsWithQuery,
   getProductById,
   getSimilarProducts,
@@ -24,10 +23,7 @@ router.post("/", protect, isAdmin, createProduct);
 // @access Private/Admin
 router.put("/:id", protect, isAdmin, updateProduct);
 
-// @route DELETE /api/products/:id
-// @desc delete a Product
-// @access Private/Admin
-router.delete("/:id", protect, isAdmin, deleteProduct);
+
 
 // @route GET /api/products
 // @desc Get all products with optional query filters

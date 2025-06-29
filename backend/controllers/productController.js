@@ -118,11 +118,11 @@ const deleteProduct = async (req, res) => {
     if (product) {
       // remove the product from DB
       await product.deleteOne();
-      res.json({ message: "Product removed" });
+      return res.json({ message: "Product removed" });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).send("Server Error");
+    return res.status(500).send("Server Error");
   }
 };
 

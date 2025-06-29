@@ -3,7 +3,9 @@ const User = require("../models/userModel");
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({});
-    res.json(users);
+    console.log(users, "users");
+    
+    return res.json(users);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server Error" });
@@ -40,11 +42,11 @@ const updateUser = async (req, res) => {
       user.name = req.body.name || user.name;
       user.email = req.body.email || user.email;
       user.password = req.body.password || user.password;
-      user.customer = req.body.customer || user.customer;
+      user.role = req.body.role || user.role;
 
       const updateUser = await user.save();
 
-      res.json({ message: "User updated successfully", user: updateUser });
+      return res.json({ message: "User updated successfully", user: updateUser });
     } else {
       return res.status(404).json({ message: "User not found" });
     }
@@ -59,9 +61,9 @@ const deleteUser = async (req, res) => {
     const user = await User.findById(req.params.id);
     if (user) {
       await user.deleteOne();
-      res.json({ message: "User deleted successfuly" });
+      return res.json({ message: "User deleted successfuly" });
     } else {
-      res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
     console.log(error);

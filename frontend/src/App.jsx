@@ -12,7 +12,7 @@ import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 import MyOrdersPage from "./pages/MyOrdersPage";
 import AdminLayout from "./components/Layout/AdminLayout";
-import AdminHomePage from "./pages/AdminHomePage";
+import AdminHomePage from "./components/Admin/AdminHomePage";
 import UserManagement from "./components/Admin/UserManagement";
 import ProductManagement from "./components/Admin/ProductManagement";
 import EditProductPage from "./components/Admin/EditProductPage";
@@ -20,8 +20,8 @@ import OrderManagement from "./components/Admin/OrderManagement";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import GuestOnly from "./components/Routes/GuestOnly";
-import RequireAdmin from "./components/Routes/RequireAdmin";
 import RequireAuth from "./components/Routes/RequireAuth";
+import ProtectedRoute from "./components/Routes/ProtectedRoute";
 
 function App() {
   return (
@@ -58,15 +58,20 @@ function App() {
           </Route>
 
           {/*  Admin route – yalnız admin user gire bilər */}
-          <Route element={<RequireAdmin />}>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminHomePage />} />
-              <Route path="dashboard" element={<AdminHomePage />} />
-              <Route path="users" element={<UserManagement />} />
-              <Route path="products" element={<ProductManagement />} />
-              <Route path="products/:id/edit" element={<EditProductPage />} />
-              <Route path="orders" element={<OrderManagement />} />
-            </Route>
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<AdminHomePage />} />
+            <Route path="dashboard" element={<AdminHomePage />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="products" element={<ProductManagement />} />
+            <Route path="products/:id/edit" element={<EditProductPage />} />
+            <Route path="orders" element={<OrderManagement />} />
           </Route>
         </Routes>
       </BrowserRouter>
