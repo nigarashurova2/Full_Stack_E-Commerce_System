@@ -1,6 +1,19 @@
+import { useEffect } from "react";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { fetchProductDetails } from "../../redux/slices/productSlice";
+import axios from "axios";
+import { updateProduct } from "../../redux/slices/adminProductSlice";
 
 const EditProductPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { selectedProduct, loading, error } = useSelector(
+    (state) => state.products
+  );
+  const { id } = useParams();
+
   const [productData, setProductData] = useState({
     name: "",
     description: "",
@@ -24,6 +37,20 @@ const EditProductPage = () => {
     ],
   });
 
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchProductDetails(id));
+    }
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (selectedProduct) {
+      setProductData(selectedProduct);
+    }
+  }, [selectedProduct]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     let mainValue = value;
@@ -36,15 +63,39 @@ const EditProductPage = () => {
     });
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    console.log(file);
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      setUploading(true);
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/upload`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      setProductData((prevData) => ({
+        ...prevData,
+        images: [...prevData.images, { url: data.imageUrl, altText: "" }],
+      }));
+      setUploading(false);
+    } catch (error) {
+      console.error(error);
+      setUploading(false);
+    }
   };
-  const handleSubmit = (e)=>{
-    e.preventDefault()
-    console.log(productData);
-    
-  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(updateProduct({ id, productData }));
+    navigate("/admin/products");
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="max-w-5xl mx-auto p-6 shadow-md rounded-md">
@@ -159,6 +210,7 @@ const EditProductPage = () => {
             onChange={handleImageUpload}
             className=""
           />
+          {uploading && <p>Uploading Image...</p>}
 
           <div className="flex gap-4 mt-4">
             {productData.images.map((image, index) => (
@@ -171,9 +223,13 @@ const EditProductPage = () => {
               </div>
             ))}
           </div>
-
         </div>
-        <button type="submit" className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition">Update Product</button>
+        <button
+          type="submit"
+          className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition"
+        >
+          Update Product
+        </button>
       </form>
     </div>
   );

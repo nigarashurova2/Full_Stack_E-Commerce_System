@@ -1,7 +1,6 @@
 import { FaRegEdit, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import {
   deleteProduct,
@@ -10,8 +9,6 @@ import {
 
 const ProductManagement = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
   const { products, loading, error } = useSelector(
     (state) => state.adminProducts
   );

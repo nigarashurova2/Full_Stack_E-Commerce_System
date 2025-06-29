@@ -8,7 +8,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { user } = useSelector((state) => state.auth);
+  const { user, loading } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -16,8 +16,8 @@ const Register = () => {
   useEffect(() => {
     if (user) {
       navigate("/");
-    }else{
-      navigate("/register")
+    } else {
+      navigate("/register");
     }
   }, [user, navigate]);
 
@@ -76,7 +76,7 @@ const Register = () => {
             type="submit"
             className="w-full bg-black text-white p-2 rounded-lg font-semibold hover:bg-gray-800 transition"
           >
-            Sign Up
+            {loading ? "Loading..." : "Sign Up"}
           </button>
 
           <p className="mt-6 text-center text-sm">

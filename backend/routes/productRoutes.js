@@ -3,7 +3,6 @@ const Product = require("../models/productModel");
 const { protect, isAdmin } = require("../middleware/authMiddleware");
 const {
   createProduct,
-  updateProduct,
   getProductsWithQuery,
   getProductById,
   getSimilarProducts,
@@ -17,11 +16,6 @@ const router = express.Router();
 // @desc a new Product
 // @access Private/Admin
 router.post("/", protect, isAdmin, createProduct);
-
-// @route PUT /api/products/:id
-// @desc update a Product
-// @access Private/Admin
-router.put("/:id", protect, isAdmin, updateProduct);
 
 
 

@@ -213,18 +213,16 @@ const getProductsWithQuery = async (req, res) => {
     
     
     let products = await Product.find(query).sort(sort).limit(Number(limit));
-    res.json(products);
+    return res.json(products);
   } catch (error) {
     console.log(error);
-    res.status(500).send("Server Error");
+    return res.status(500).send("Server Error");
   }
 };
 
 const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    console.log(product, "product");
-
     if (product) {
       return res.json(product);
     } else {
@@ -256,15 +254,15 @@ const getSimilarProducts = async (req, res) => {
 
 const getBestSellerProduct = async (req, res) => {
   try {
-    const bestSeller = await Product.findOne().sort({ rating: -1 });
+    const bestSeller = await Product.findOne({}).sort({ rating: -1 });
     if (bestSeller) {
-      res.json(bestSeller);
+      return res.json(bestSeller);
     } else {
-      res.status(404).json({ message: "No best seller found" });
+      return res.status(404).json({ message: "No best seller found" });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).send("Server Error");
+    return res.status(500).send("Server Error");
   }
 };
 
@@ -272,23 +270,23 @@ const newArrivalsProducts = async (req, res) => {
   try {
     const newArrivals = await Product.find({}).sort({ createdAt: -1 }).limit(8);
     if (newArrivals) {
-      res.json(newArrivals);
+      return res.json(newArrivals);
     } else {
-      res.status(404).json({ message: "No new arrivals found" });
+      return res.status(404).json({ message: "No new arrivals found" });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).send("Server Error");
+    return res.status(500).send("Server Error");
   }
 };
 
 const getAllProducts = async (req, res) => {
   try {
     const products = await Product.find({});
-    res.json(products);
+    return res.json(products);
   } catch (error) {
     console.log(error);
-    res.status(500).send("Server Error");
+    return res.status(500).send("Server Error");
   }
 };
 

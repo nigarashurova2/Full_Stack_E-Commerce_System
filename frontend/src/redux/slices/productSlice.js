@@ -59,11 +59,6 @@ export const fetchProductDetails = createAsyncThunk(
   "product/fetchProductDetails",
   async (id, { rejectWithValue }) => {
     try {
-      console.log(
-        `${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`,
-        "`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`"
-      );
-
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`
       );
@@ -93,30 +88,38 @@ export const updateProduct = createAsyncThunk(
 
 export const fetchSimilarProducts = createAsyncThunk(
   "product/fetchSimilarProducts",
-  async (id) => {
-    const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/api/products/similar/${id}`
-    );
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/products/similar/${id}`
+      );
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
   }
 );
 
 export const bestSellerProduct = createAsyncThunk(
   "product/bestSellerProduct",
-  async () => {
-    const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/api/products/bestSeller`
-    );
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/products/bestSeller`
+      );
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
   }
 );
 
 const initialState = {
   products: [],
   newArrivals: [],
-  bestSeller: {},
+  bestSeller: null,
   selectedProduct: null,
   similarProducts: [],
   loading: false,
@@ -223,7 +226,7 @@ const productSlice = createSlice({
       })
       .addCase(bestSellerProduct.pending, (state) => {
         state.loading = true;
-        state.error = false;
+        state.error = null;
       })
       .addCase(bestSellerProduct.fulfilled, (state, action) => {
         state.loading = false;
