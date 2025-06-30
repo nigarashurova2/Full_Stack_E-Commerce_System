@@ -1,13 +1,23 @@
-#logs
-logs
-*.logs
-
-# node modules
-frontend/node_modules/
+# Node modules (həm backend, həm frontend)
 backend/node_modules/
+frontend/node_modules/
 
-# environment varibles
-frontend/.env
+# Environment files (həssas məlumatlar)
 backend/.env
+frontend/.env
 
+# Logs
+*.log
+
+# macOS
 .DS_Store
+
+# build output (əgər var)
+backend/dist/
+frontend/build/
+frontend/.next/
+
+# VSCode və digər editor faylları
+.vscode/
+.idea/
+*.swp
