@@ -85,6 +85,14 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center space-x-4">
+          {!user && (
+            <Link
+              to="/Login"
+              className="block bg-[#ea2e0e] rounded-full px-5 py-1  text-sm text-white underline"
+            >
+              Login
+            </Link>
+          )}
           {user && user.role === "admin" && (
             <Link
               to="/admin"
